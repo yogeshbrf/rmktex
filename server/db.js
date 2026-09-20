@@ -227,12 +227,17 @@ async function initDB() {
  */
 function saveDB() {
   if (!db) return;
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
+  try {
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+    const data = db.export();
+    const buffer = Buffer.from(data);
+    fs.writeFileSync(DB_PATH, buffer);
+  } catch (err) {
+    // Gracefully handle read-only environments (e.g. Vercel Serverless)
+    console.warn('saveDB warning (non-fatal):', err.message);
   }
-  const data = db.export();
-  const buffer = Buffer.from(data);
-  fs.writeFileSync(DB_PATH, buffer);
 }
 
 /**

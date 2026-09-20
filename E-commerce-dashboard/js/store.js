@@ -4,7 +4,13 @@
  * All sectors (Admin, Warehouse, Dispatch, Delivery, Support, Finance) read/write here.
  */
 
-const BACKEND_BASE = 'http://localhost:5000/api';
+const BACKEND_BASE = (window.RMK_CONFIG && window.RMK_CONFIG.BACKEND_URL)
+  ? window.RMK_CONFIG.BACKEND_URL.replace(/\/+$/, '') + '/api'
+  : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000/api'
+    : window.location.origin + '/api');
+
+window.BACKEND_BASE = BACKEND_BASE;
 
 const INITIAL_APP_DATA = {
   products: [],
@@ -111,8 +117,15 @@ const RMK_STORE = {
 
   initSocketConnection() {
     if (typeof io !== 'undefined') {
-      try {
-        this.socket = io('http://localhost:5000');
+        const socketUrl = (window.RMK_CONFIG && window.RMK_CONFIG.SOCKET_URL)
+          ? window.RMK_CONFIG.SOCKET_URL
+          : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : null);
+        
+        if (socketUrl) {
+          this.socket = io(socketUrl);
+        } else {
+          return;
+        }
         
         this.socket.on('orderCreated', (data) => {
           if (data && data.order) {

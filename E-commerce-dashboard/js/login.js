@@ -210,7 +210,8 @@ async function handleSectorLoginSubmit(event, roleKey) {
   const alertBox = document.getElementById('loginAlertBox');
 
   try {
-    const response = await fetch('http://localhost:5000/api/auth/login', {
+    const apiBase = window.BACKEND_BASE || (window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api');
+    const response = await fetch(`${apiBase}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: emailInput, password: passwordInput, role: roleKey })
@@ -272,7 +273,8 @@ async function handleSectorRegisterSubmit(event, roleKey) {
   const alertBox = document.getElementById('registerAlertBox');
 
   try {
-    const response = await fetch('http://localhost:5000/api/auth/register', {
+    const apiBase = window.BACKEND_BASE || (window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api');
+    const response = await fetch(`${apiBase}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, phone, password, role: roleKey })
