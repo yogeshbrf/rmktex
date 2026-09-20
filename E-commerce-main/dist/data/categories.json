@@ -1,0 +1,60 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "name": "Men",
+      "slug": "men",
+      "image": "/imgs/tx_m01.jpg",
+      "subcategories": [
+        { "id": 11, "name": "Casual Shirts", "slug": "men-casual-shirts", "count": 60 },
+        { "id": 12, "name": "Linen Wear", "slug": "men-linen-wear", "count": 60 }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Women",
+      "slug": "women",
+      "image": "/imgs/tx_w01.jpg",
+      "subcategories": [
+        { "id": 21, "name": "Kurta Sets", "slug": "women-kurta-sets", "count": 45 },
+        { "id": 22, "name": "Handloom Cotton", "slug": "women-handloom-cotton", "count": 45 }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Boys (Kids)",
+      "slug": "boys-kids",
+      "image": "/imgs/tx_b01.jpg",
+      "subcategories": [
+        { "id": 31, "name": "Kurta & Pyjama Sets", "slug": "boys-kurta-pyjama", "count": 35 }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Girls (Kids)",
+      "slug": "girls-kids",
+      "image": "/imgs/tx_g01.jpg",
+      "subcategories": [
+        { "id": 41, "name": "Pattu Pavadai Sets", "slug": "girls-pattu-pavadai", "count": 30 }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Unisex",
+      "slug": "unisex",
+      "image": "/imgs/tx_u01.jpg",
+      "subcategories": [
+        { "id": 51, "name": "Graphic Tees", "slug": "unisex-graphic-tees", "count": 75 }
+      ]
+    }
+  ],
+  "allSubcategories": [
+    { "id": 11, "name": "Casual Shirts", "slug": "men-casual-shirts", "count": 60, "parentCategory": "Men", "parentSlug": "men" },
+    { "id": 12, "name": "Linen Wear", "slug": "men-linen-wear", "count": 60, "parentCategory": "Men", "parentSlug": "men" },
+    { "id": 21, "name": "Kurta Sets", "slug": "women-kurta-sets", "count": 45, "parentCategory": "Women", "parentSlug": "women" },
+    { "id": 22, "name": "Handloom Cotton", "slug": "women-handloom-cotton", "count": 45, "parentCategory": "Women", "parentSlug": "women" },
+    { "id": 31, "name": "Kurta & Pyjama Sets", "slug": "boys-kurta-pyjama", "count": 35, "parentCategory": "Boys (Kids)", "parentSlug": "boys-kids" },
+    { "id": 41, "name": "Pattu Pavadai Sets", "slug": "girls-pattu-pavadai", "count": 30, "parentCategory": "Girls (Kids)", "parentSlug": "girls-kids" },
+    { "id": 51, "name": "Graphic Tees", "slug": "unisex-graphic-tees", "count": 75, "parentCategory": "Unisex", "parentSlug": "unisex" }
+  ]
+}
