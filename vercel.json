@@ -1,0 +1,31 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "node build.js",
+  "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/dashboard",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/dashboard/(.*)",
+      "destination": "/dashboard/$1"
+    },
+    {
+      "source": "/imgs/(.*)",
+      "destination": "/imgs/$1"
+    },
+    {
+      "source": "/assets/(.*)",
+      "destination": "/assets/$1"
+    },
+    {
+      "source": "/data/(.*)",
+      "destination": "/data/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

@@ -4,6 +4,7 @@
   "private": true,
   "description": "Root workspace for E-commerce-main + E-commerce-dashboard + Central Backend",
   "scripts": {
+    "build": "node build.js",
     "setup": "cd server && npm install && cd ../E-commerce-main && npm install",
     "seed": "cd server && node seed.js",
     "start:backend": "cd server && node index.js",
