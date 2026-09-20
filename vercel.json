@@ -2,12 +2,23 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "node build.js",
   "outputDirectory": "dist",
-  "functions": {
-    "api/index.js": {
-      "includeFiles": "server/data/**"
-    }
-  },
   "rewrites": [
+    {
+      "source": "/api/products(.*)",
+      "destination": "/api/products.json"
+    },
+    {
+      "source": "/api/categories(.*)",
+      "destination": "/api/categories.json"
+    },
+    {
+      "source": "/api/sellers(.*)",
+      "destination": "/api/sellers.json"
+    },
+    {
+      "source": "/api/health(.*)",
+      "destination": "/api/health.json"
+    },
     {
       "source": "/api/(.*)",
       "destination": "/api/index.js"

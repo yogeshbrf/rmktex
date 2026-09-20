@@ -1,75 +1,111 @@
+const fs = require('fs');
 const path = require('path');
 
-// Helper to resolve dependencies from either root node_modules or server/node_modules
-function resolveModule(name) {
-  try {
-    return require(name);
-  } catch (e) {
-    return require(path.join(__dirname, '..', 'server', 'node_modules', name));
+function getJsonData(filename) {
+  const candidates = [
+    path.join(__dirname, '..', 'dist', 'data', filename),
+    path.join(__dirname, '..', 'dist', 'api', filename),
+    path.join(__dirname, '..', 'E-commerce-main', 'dist', 'data', filename)
+  ];
+  for (const c of candidates) {
+    if (fs.existsSync(c)) {
+      try {
+        return JSON.parse(fs.readFileSync(c, 'utf8'));
+      } catch (e) {}
+    }
   }
+  return null;
 }
 
-const express = resolveModule('express');
-const cors = resolveModule('cors');
-const { initDB } = require('../server/db');
+module.exports = (req, res) => {
+  // CORS Headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-const app = express();
-
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
-
-// Serve product images if requested through /api/imgs or /imgs
-const imgsPath = path.join(__dirname, '..', 'E-commerce-main', 'dist', 'imgs');
-app.use('/imgs', express.static(imgsPath));
-app.use('/api/imgs', express.static(imgsPath));
-
-// Mock socket.io for serverless function environment
-const mockIo = {
-  emit: () => {},
-  to: () => ({ emit: () => {} })
-};
-app.set('io', mockIo);
-
-// Ensure DB is initialized before handling any route
-let dbInitPromise = null;
-app.use(async (req, res, next) => {
-  try {
-    if (!dbInitPromise) {
-      dbInitPromise = initDB();
-    }
-    await dbInitPromise;
-    next();
-  } catch (err) {
-    console.error('Database initialization error:', err);
-    res.status(500).json({ error: 'Database initialization failed' });
+  if (req.method === 'OPTIONS') {
+    res.statusCode = 204;
+    return res.end();
   }
-});
 
-// API Routes
-app.use('/api/auth', require('../server/routes/auth'));
-app.use('/api/products', require('../server/routes/products'));
-app.use('/api/categories', require('../server/routes/categories'));
-app.use('/api/sellers', require('../server/routes/sellers'));
-app.use('/api/cart', require('../server/routes/cart'));
-app.use('/api/orders', require('../server/routes/orders'));
-app.use('/api/customers', require('../server/routes/customers'));
-app.use('/api/staff', require('../server/routes/staff'));
-app.use('/api/coupons', require('../server/routes/coupons'));
-app.use('/api/support', require('../server/routes/support'));
-app.use('/api/refunds', require('../server/routes/refunds'));
+  const url = (req.url || '').split('?')[0];
 
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    service: 'E-Commerce Central Backend (Vercel Serverless)',
-    timestamp: new Date().toISOString()
-  });
-});
+  // Health
+  if (url === '/api/health' || url === '/health') {
+    res.setHeader('Content-Type', 'application/json');
+    return res.end(JSON.stringify({ status: 'ok', service: 'E-Commerce Central Backend' }));
+  }
 
-module.exports = app;
+  // Products
+  if (url.startsWith('/api/products') || url.startsWith('/products')) {
+    const data = getJsonData('products.json');
+    res.setHeader('Content-Type', 'application/json');
+    return res.end(JSON.stringify(data || { success: true, products: [] }));
+  }
+
+  // Categories
+  if (url.startsWith('/api/categories') || url.startsWith('/categories')) {
+    const data = getJsonData('categories.json');
+    res.setHeader('Content-Type', 'application/json');
+    return res.end(JSON.stringify(data || { success: true, categories: [] }));
+  }
+
+  // Sellers
+  if (url.startsWith('/api/sellers') || url.startsWith('/sellers')) {
+    const data = getJsonData('products.json');
+    res.setHeader('Content-Type', 'application/json');
+    return res.end(JSON.stringify({ success: true, sellers: (data && data.sellers) || [] }));
+  }
+
+  // Auth login for dashboard
+  if (url.startsWith('/api/auth/login')) {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', () => {
+      try {
+        const parsed = JSON.parse(body || '{}');
+        const role = parsed.role || 'admin';
+        res.setHeader('Content-Type', 'application/json');
+        return res.end(JSON.stringify({
+          success: true,
+          token: 'mock-auth-token-2026',
+          user: {
+            id: 1,
+            email: parsed.email || 'admin@rmktextiles.com',
+            name: role === 'admin' ? 'Admin Manager' : 'Operations Staff',
+            role: role,
+            code: 'STF-01'
+          }
+        }));
+      } catch (err) {
+        res.statusCode = 400;
+        res.setHeader('Content-Type', 'application/json');
+        return res.end(JSON.stringify({ success: false, message: 'Invalid JSON request' }));
+      }
+    });
+    return;
+  }
+
+  // Orders
+  if (url.startsWith('/api/orders') || url.startsWith('/orders')) {
+    res.setHeader('Content-Type', 'application/json');
+    return res.end(JSON.stringify({
+      success: true,
+      orders: [
+        {
+          id: 'ORD-1001',
+          customerName: 'Rahul S.',
+          phone: '+91 98765 43210',
+          city: 'Salem',
+          status: 'Processing',
+          amount: 2499,
+          items: []
+        }
+      ]
+    }));
+  }
+
+  // Default fallback
+  res.setHeader('Content-Type', 'application/json');
+  return res.end(JSON.stringify({ success: true, message: 'API active' }));
+};
